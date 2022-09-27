@@ -1,0 +1,21 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODBURL:mongodb://localhost:27017/StockPerformance}
+      auto-index-creation: true
+    redis:
+      database: 0
+      host: ${REDISHOST:localhost}
+      port: ${REDISPORT:6379}
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+
+stock:
+  csv:
+    path: "D:\\csv\\"
+
+line:
+  token: "52Ssmd1K8YcK9g9mRKKY7j9kRm22POhg7Lm8rGsA8nj"
