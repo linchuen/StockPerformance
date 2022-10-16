@@ -28,7 +28,6 @@ class StockPerformanceApplicationTests {
     @Test
     void httpTest(@Autowired OkHttpClient client){
         stockMonthDataService.downloadData(1101,2022,9);
-
     }
 
 }

@@ -57,4 +57,8 @@ public class CrawlStockcodeService {
             log.error("股票基本資料建立錯誤");
         }
     }
+
+    public List<StockInfo> findAllStockInfo(){
+        return stockInfoRepository.findAll();
+    }
 }

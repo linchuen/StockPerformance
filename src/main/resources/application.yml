@@ -13,9 +13,5 @@ spring:
         max-active: 8
         max-wait: -1
 
-stock:
-  csv:
-    path: "D:\\csv\\"
-
 line:
   token: "52Ssmd1K8YcK9g9mRKKY7j9kRm22POhg7Lm8rGsA8nj"
