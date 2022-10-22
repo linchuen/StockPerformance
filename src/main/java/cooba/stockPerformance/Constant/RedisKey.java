@@ -2,7 +2,6 @@ package cooba.stockPerformance.Constant;
 
 import org.springframework.stereotype.Component;
 
-@Component
 public class RedisKey {
     public static String DOWNLOAD_REQUEST(int stockcode, int year, int month) {
         StringBuilder stringBuilder=new StringBuilder()

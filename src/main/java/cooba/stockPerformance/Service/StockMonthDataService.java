@@ -66,6 +66,10 @@ public class StockMonthDataService {
             CSVReader csvReader = new CSVReader(Objects.requireNonNull(response.body()).charStream());
 
             List<String[]> dataRows = csvReader.readAll();
+            if (dataRows.isEmpty()) {
+                log.warn("data rows is empty");
+                return;
+            }
             log.info(Arrays.toString(dataRows.get(0)));
             dataRows.remove(1);
             List<StockTradeInfo> stockTradeInfoList = dataRows.stream().filter(strings -> strings.length == 10).map(strings -> {
@@ -74,13 +78,31 @@ public class StockMonthDataService {
                 int m = Integer.parseInt(dateArr[1]);
                 int d = Integer.parseInt(dateArr[2]);
                 LocalDate dataDate = LocalDate.of(y, m, d);
-                BigDecimal tradingVolume = new BigDecimal(strings[1].replace(",", ""));
-                BigDecimal transaction = new BigDecimal(strings[2].replace(",", ""));
-                BigDecimal openingPrice = new BigDecimal(strings[3].replace("--", "0"));
-                BigDecimal highestPrice = new BigDecimal(strings[4].replace("--", "0"));
-                BigDecimal lowestPrice = new BigDecimal(strings[5].replace("--", "0"));
-                BigDecimal closingPrice = new BigDecimal(strings[6].replace("--", "0"));
-                BigDecimal turnover = new BigDecimal(strings[8].replace(",", ""));
+                BigDecimal tradingVolume = new BigDecimal(strings[1]
+                        .replace(",", ""));
+
+                BigDecimal transaction = new BigDecimal(strings[2]
+                        .replace(",", "")
+                        .replace(",", ""));
+
+                BigDecimal openingPrice = new BigDecimal(strings[3]
+                        .replace(",", "")
+                        .replace("--", "0"));
+
+                BigDecimal highestPrice = new BigDecimal(strings[4]
+                        .replace(",", "")
+                        .replace("--", "0"));
+
+                BigDecimal lowestPrice = new BigDecimal(strings[5]
+                        .replace(",", "")
+                        .replace("--", "0"));
+
+                BigDecimal closingPrice = new BigDecimal(strings[6]
+                        .replace(",", "")
+                        .replace("--", "0"));
+
+                BigDecimal turnover = new BigDecimal(strings[8]
+                        .replace(",", ""));
 
                 String id = Stream.of(stockcode, y, m, d).map(integer -> String.format("%02d", integer)).collect(Collectors.joining("-"));
 
@@ -105,9 +127,10 @@ public class StockMonthDataService {
             mongoUtil.insertLog(getClass().getSimpleName(), "End download stockcode " + stockcode + " data , date: " + year + month);
 
             String redisKey = RedisKey.DOWNLOAD_REQUEST(stockcode, year, month);
-            redisTemplate.boundValueOps(redisKey).setIfAbsent(now,3, TimeUnit.DAYS);
+            redisTemplate.boundValueOps(redisKey).setIfAbsent(now, 3, TimeUnit.DAYS);
         } catch (Exception e) {
             String msg = String.format("error stockcode: %s , date: %d%d", stockcode, year, month);
+            log.error("{} error msg:{}", msg, e.getMessage());
             mongoUtil.insertDataExceptionLog(getClass().getSimpleName(), msg, e);
         }
     }

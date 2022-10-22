@@ -1,6 +1,7 @@
 package cooba.stockPerformance;
 
 import cooba.stockPerformance.Service.CrawlStockcodeService;
+import cooba.stockPerformance.Service.StatisticsService;
 import cooba.stockPerformance.Service.StockMonthDataService;
 import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,8 @@ class StockPerformanceApplicationTests {
     CrawlStockcodeService crawlStockcodeService;
     @Autowired
     StockMonthDataService stockMonthDataService;
+    @Autowired
+    StatisticsService statisticsService;
 
     @Test
     void contextLoads() {
@@ -26,8 +29,13 @@ class StockPerformanceApplicationTests {
     }
 
     @Test
-    void httpTest(@Autowired OkHttpClient client){
-        stockMonthDataService.downloadData(1101,2022,9);
+    void downloadTest(@Autowired OkHttpClient client){
+        stockMonthDataService.downloadData(6409,2022,9);
+    }
+
+    @Test
+    void dbTest(){
+        statisticsService.calculateStatisticsData(1101,2022,9);
     }
 
 }

@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ExceptionLogObject extends BaseLogObject {
     private String exceptionMsg;
+    private String stackTrace;
 
     @Builder
-    public ExceptionLogObject(String className, String message, LocalDateTime localDateTime, String dateStr, String exceptionMsg) {
+    public ExceptionLogObject(String className, String message, LocalDateTime localDateTime, String dateStr, String exceptionMsg, String stackTrace) {
         super(className, message, localDateTime, dateStr);
         this.exceptionMsg = exceptionMsg;
+        this.stackTrace = stackTrace;
     }
 }

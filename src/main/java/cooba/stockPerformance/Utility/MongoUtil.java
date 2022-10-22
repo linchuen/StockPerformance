@@ -4,20 +4,21 @@ import cooba.stockPerformance.Enums.MongoCollectionNameEnum;
 import cooba.stockPerformance.Object.BaseLogObject;
 import cooba.stockPerformance.Object.ExceptionLogObject;
 import cooba.stockPerformance.Object.LogObject;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Component
 public class MongoUtil {
     @Autowired
     MongoTemplate mongoTemplate;
-
-    public static SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+    @Autowired
+    @Qualifier("now")
+    private String now;
 
     public void insertDataExceptionLog(String className, String msg, Exception e) {
         BaseLogObject logObject = ExceptionLogObject
@@ -25,8 +26,9 @@ public class MongoUtil {
                 .className(className)
                 .message(msg)
                 .exceptionMsg(e.getMessage())
+                .stackTrace(ExceptionUtils.getStackTrace(e))
                 .localDateTime(LocalDateTime.now())
-                .dateStr(sdFormat.format(new Date()))
+                .dateStr(now)
                 .build();
 
         mongoTemplate.insert(logObject, MongoCollectionNameEnum.INSERT_DATA_EXCEPTION_LOG.getName());
@@ -38,7 +40,7 @@ public class MongoUtil {
                 .className(className)
                 .message(msg)
                 .localDateTime(LocalDateTime.now())
-                .dateStr(sdFormat.format(new Date()))
+                .dateStr(now)
                 .build();
 
         mongoTemplate.insert(logObject, MongoCollectionNameEnum.LOG.getName());
