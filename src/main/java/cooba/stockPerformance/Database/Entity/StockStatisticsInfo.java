@@ -18,17 +18,17 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-@CompoundIndex(name = "compound_sc_date_idx", def = "{ stockcode: 1, data: -1}")
+@CompoundIndex(name = "compound_sc_date_idx", def = "{ stockcode: 1, date: -1}")
 @CompoundIndex(name = "compound_sc_y_m_idx", def = "{ stockcode: 1, year: -1, month: 1}")
 public class StockStatisticsInfo {
     @Id
     private String id;
-    @Indexed(name = "stockcode_idx")
     private int stockcode;
     @Indexed(name = "date_idx")
     private LocalDate date;
     private int year;
     private int month;
+    private BigDecimal closingPrice;
     private BigDecimal avgCost;
     private BigDecimal avgTransaction;
     private BigDecimal avg5dCost;
@@ -38,19 +38,24 @@ public class StockStatisticsInfo {
     private BigDecimal avg10dPrice;
     private BigDecimal avg21dPrice;
 
-    public static StockStatisticsInfo transfer(StockTradeInfo stockTradeInfo){
+    public static StockStatisticsInfo transfer(StockTradeInfo stockTradeInfo) {
         StockStatisticsInfo stockStatisticsInfo = new StockStatisticsInfo();
-        try{
+        try {
             BeanUtils.copyProperties(stockStatisticsInfo, stockTradeInfo);
-        }catch (Exception e){
-            stockStatisticsInfo.setId(stockStatisticsInfo.getId());
-            stockStatisticsInfo.setStockcode(stockStatisticsInfo.getStockcode());
-            stockStatisticsInfo.setDate(stockStatisticsInfo.getDate());
-            stockStatisticsInfo.setYear(stockStatisticsInfo.getYear());
-            stockStatisticsInfo.setMonth(stockStatisticsInfo.getMonth());
+        } catch (Exception e) {
+            stockStatisticsInfo.setId(stockTradeInfo.getId());
+            stockStatisticsInfo.setStockcode(stockTradeInfo.getStockcode());
+            stockStatisticsInfo.setDate(stockTradeInfo.getDate());
+            stockStatisticsInfo.setYear(stockTradeInfo.getYear());
+            stockStatisticsInfo.setMonth(stockTradeInfo.getMonth());
+            stockStatisticsInfo.setClosingPrice(stockTradeInfo.getClosingPrice());
         }
-        stockStatisticsInfo.setAvgCost(stockTradeInfo.getTransaction().divide(stockTradeInfo.getTradingVolume(),2, RoundingMode.HALF_UP));
-        stockStatisticsInfo.setAvgTransaction(stockTradeInfo.getTransaction().divide(stockTradeInfo.getTurnover(),2, RoundingMode.HALF_UP));
+        stockStatisticsInfo.setAvgCost(stockTradeInfo.getTradingVolume().compareTo(BigDecimal.ZERO) == 0
+                ? BigDecimal.ZERO
+                : stockTradeInfo.getTransaction().divide(stockTradeInfo.getTradingVolume(), 2, RoundingMode.HALF_UP));
+        stockStatisticsInfo.setAvgTransaction(stockTradeInfo.getTurnover().compareTo(BigDecimal.ZERO) == 0
+                ? BigDecimal.ZERO
+                : stockTradeInfo.getTransaction().divide(stockTradeInfo.getTurnover(), 2, RoundingMode.HALF_UP));
         return stockStatisticsInfo;
     }
 }

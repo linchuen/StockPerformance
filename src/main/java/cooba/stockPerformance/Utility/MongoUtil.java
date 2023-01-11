@@ -11,16 +11,18 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Date;
+
+import static cooba.stockPerformance.Config.CommonConfig.sdFormat;
 
 @Component
 public class MongoUtil {
     @Autowired
     MongoTemplate mongoTemplate;
-    @Autowired
-    @Qualifier("now")
-    private String now;
 
     public void insertDataExceptionLog(String className, String msg, Exception e) {
+        String now = sdFormat.format(new Date());
+
         BaseLogObject logObject = ExceptionLogObject
                 .builder()
                 .className(className)
@@ -35,6 +37,8 @@ public class MongoUtil {
     }
 
     public void insertLog(String className, String msg) {
+        String now = sdFormat.format(new Date());
+
         BaseLogObject logObject = LogObject
                 .builder()
                 .className(className)

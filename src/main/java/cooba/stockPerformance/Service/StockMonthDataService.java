@@ -1,6 +1,7 @@
 package cooba.stockPerformance.Service;
 
 import com.opencsv.CSVReader;
+import cooba.stockPerformance.Annotation.Statistics;
 import cooba.stockPerformance.Constant.RedisKey;
 import cooba.stockPerformance.Database.Entity.StockTradeInfo;
 import cooba.stockPerformance.Database.repository.StockTradeInfoRepository;
@@ -23,6 +24,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static cooba.stockPerformance.Config.CommonConfig.sdFormat;
+
 @Slf4j
 @Service
 public class StockMonthDataService {
@@ -32,9 +35,6 @@ public class StockMonthDataService {
     private HttpUtil httpUtil;
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
-    @Autowired
-    @Qualifier("now")
-    private String now;
     @Autowired
     private StockTradeInfoRepository stockTradeInfoRepository;
 
@@ -55,6 +55,7 @@ public class StockMonthDataService {
         }
     }
 
+    @Statistics
     public void downloadData(int stockcode, int year, int month) {
         String date = DateUtil.getDateString(year, month, 1, DateUtil.NORMAL_FORMAT);
         mongoUtil.insertLog(getClass().getSimpleName(), "Start download stockcode " + stockcode + " data , date: " + year + month);
@@ -127,6 +128,7 @@ public class StockMonthDataService {
             mongoUtil.insertLog(getClass().getSimpleName(), "End download stockcode " + stockcode + " data , date: " + year + month);
 
             String redisKey = RedisKey.DOWNLOAD_REQUEST(stockcode, year, month);
+            String now = sdFormat.format(new Date());
             redisTemplate.boundValueOps(redisKey).setIfAbsent(now, 3, TimeUnit.DAYS);
         } catch (Exception e) {
             String msg = String.format("error stockcode: %s , date: %d%d", stockcode, year, month);

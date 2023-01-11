@@ -1,6 +1,7 @@
 package cooba.stockPerformance;
 
 import cooba.stockPerformance.Service.CrawlStockcodeService;
+import cooba.stockPerformance.Service.EvaluateService;
 import cooba.stockPerformance.Service.StatisticsService;
 import cooba.stockPerformance.Service.StockMonthDataService;
 import okhttp3.OkHttpClient;
@@ -18,6 +19,8 @@ class StockPerformanceApplicationTests {
     StockMonthDataService stockMonthDataService;
     @Autowired
     StatisticsService statisticsService;
+    @Autowired
+    EvaluateService evaluateService;
 
     @Test
     void contextLoads() {
@@ -35,7 +38,12 @@ class StockPerformanceApplicationTests {
 
     @Test
     void dbTest(){
-        statisticsService.calculateStatisticsData(1101,2022,9);
+        statisticsService.calculateStatisticsData(6689,2022,9);
+    }
+
+    @Test
+    void evaluateTest(){
+        evaluateService.evaluateStockPerformance(2330,2022,8,2);
     }
 
 }

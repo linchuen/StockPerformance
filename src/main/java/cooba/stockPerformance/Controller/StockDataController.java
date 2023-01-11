@@ -22,7 +22,6 @@ public class StockDataController {
     @Autowired
     StatisticsService statisticsService;
 
-
     @GetMapping("/stock/download/{year}/{month}")
     public ResponseEntity<List<StockInfo>> getAllMonthData(@PathVariable int year, @PathVariable int month) {
         List<StockInfo> stockInfoList = crawlStockcodeService.findAllStockInfo();

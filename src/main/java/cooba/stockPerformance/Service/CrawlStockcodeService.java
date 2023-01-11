@@ -54,6 +54,7 @@ public class CrawlStockcodeService {
         try{
             stockInfoRepository.insert(stockInfoList);
         }catch (Exception e){
+            e.printStackTrace();
             log.error("股票基本資料建立錯誤");
         }
     }

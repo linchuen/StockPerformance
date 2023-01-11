@@ -4,6 +4,9 @@ import cooba.stockPerformance.Database.Entity.StockStatisticsInfo;
 import cooba.stockPerformance.Database.Entity.StockTradeInfo;
 import cooba.stockPerformance.Database.repository.StockStatisticsInfoRepository;
 import cooba.stockPerformance.Database.repository.StockTradeInfoRepository;
+import cooba.stockPerformance.Utility.MongoUtil;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +21,11 @@ import java.util.stream.Collectors;
 
 import static cooba.stockPerformance.Constant.Constant.*;
 
+@Slf4j
 @Service
 public class StatisticsService {
+    @Autowired
+    private MongoUtil mongoUtil;
     @Autowired
     private StockTradeInfoRepository stockTradeInfoRepository;
     @Autowired
@@ -29,15 +35,38 @@ public class StatisticsService {
         LocalDate last2month = countLast2Month(year, month);
         int startYear = last2month.getYear();
         int startMonth = last2month.getMonthValue();
+        log.info("Start calculate stock statistics,Stockcode: {}, Year:{} Month:{}", stockcode, year, month);
 
         List<StockTradeInfo> calculateList = getCalculateList(stockcode, year, month, startYear, startMonth);
         List<StockStatisticsInfo> statisticsInfoList = calculateList.stream().map(StockStatisticsInfo::transfer).collect(Collectors.toList());
-        countNDaysStockTradeInfo(calculateList, statisticsInfoList, NUM5);
-        countNDaysStockTradeInfo(calculateList, statisticsInfoList, NUM10);
-        countNDaysStockTradeInfo(calculateList, statisticsInfoList, NUM21);
+        log.info("Be calculated list size:{}", calculateList.size());
+
+        boolean isContainMonth = calculateList.stream().anyMatch(stockTradeInfo -> stockTradeInfo.getMonth() == month);
+        if (!isContainMonth) {
+            log.warn("list did not contain month data");
+            return;
+        }
+
+        try {
+            if (calculateList.size() > NUM5) {
+                countNDaysStockTradeInfo(calculateList, statisticsInfoList, NUM5);
+            }
+            if (calculateList.size() > NUM10) {
+                countNDaysStockTradeInfo(calculateList, statisticsInfoList, NUM10);
+            }
+            if (calculateList.size() > NUM21) {
+                countNDaysStockTradeInfo(calculateList, statisticsInfoList, NUM21);
+            }
+        } catch (Exception e) {
+            String msg = String.format("countNDaysStockTradeInfo error stockcode: %s , date: %d%d", stockcode, year, month);
+            log.error("{} countNDaysStockTradeInfo error msg:{}", msg, e.getMessage());
+            mongoUtil.insertDataExceptionLog(getClass().getSimpleName(), msg, e);
+            return;
+        }
 
         List<StockStatisticsInfo> resultList = statisticsInfoList.stream().filter(stockStatisticsInfo -> stockStatisticsInfo.getMonth() == month).collect(Collectors.toList());
         stockStatisticsInfoRepository.saveAll(resultList);
+        log.info("End calculate stock statistics,Stockcode: {}, Year:{} Month:{}", stockcode, year, month);
     }
 
     public void countNDaysStockTradeInfo(List<StockTradeInfo> calculateList, List<StockStatisticsInfo> resultList, int days) {
