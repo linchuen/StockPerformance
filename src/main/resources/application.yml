@@ -15,3 +15,7 @@ spring:
 
 line:
   token: "52Ssmd1K8YcK9g9mRKKY7j9kRm22POhg7Lm8rGsA8nj"
+
+telegram:
+  name: "cooba"
+  token: "5844208085:AAEOipU6ZzAt4WY9SpsJV6tKHva4pxZyJDc"
