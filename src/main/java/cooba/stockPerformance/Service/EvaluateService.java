@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -28,8 +29,8 @@ public class EvaluateService {
         if (duration == 1) {
             statisticsInfoList = stockStatisticsInfoRepository.findByStockcodeAndYearAndMonth(stockcode, year, month);
         } else {
-            LocalDateTime startTime = LocalDateTime.of(year, month, 1, 0, 0, 0).minusSeconds(1);
-            LocalDateTime endTime = LocalDateTime.of(year, month + duration, 1, 0, 0, 0);
+            LocalDateTime startTime = LocalDate.of(year, month, 1).atStartOfDay();
+            LocalDateTime endTime = startTime.plusMonths(duration);
             statisticsInfoList = stockStatisticsInfoRepository.findByStockcodeAndDateBetween(stockcode, startTime, endTime);
         }
 

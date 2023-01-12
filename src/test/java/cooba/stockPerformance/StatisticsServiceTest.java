@@ -1,12 +1,9 @@
 package cooba.stockPerformance;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cooba.stockPerformance.Database.Entity.StockStatisticsInfo;
 import cooba.stockPerformance.Database.Entity.StockTradeInfo;
-import cooba.stockPerformance.Database.repository.StockTradeInfoRepository;
-import cooba.stockPerformance.Service.StatisticsService;
-import org.assertj.core.api.Assert;
+import cooba.stockPerformance.DBService.StatisticsService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;

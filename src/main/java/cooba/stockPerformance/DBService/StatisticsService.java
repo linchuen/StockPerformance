@@ -1,11 +1,10 @@
-package cooba.stockPerformance.Service;
+package cooba.stockPerformance.DBService;
 
 import cooba.stockPerformance.Database.Entity.StockStatisticsInfo;
 import cooba.stockPerformance.Database.Entity.StockTradeInfo;
 import cooba.stockPerformance.Database.repository.StockStatisticsInfoRepository;
 import cooba.stockPerformance.Database.repository.StockTradeInfoRepository;
 import cooba.stockPerformance.Utility.MongoUtil;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -134,11 +133,7 @@ public class StatisticsService {
     }
 
     private LocalDate countLast2Month(int year, int month) {
-        int last2month = month - 1;
-        if (last2month > 0) {
-            return LocalDate.of(year, last2month, 1);
-        } else {
-            return LocalDate.of(year - 1, last2month + 12, 1);
-        }
+        LocalDate inputDate = LocalDate.of(year, month, 1);
+        return inputDate.minusMonths(1);
     }
 }

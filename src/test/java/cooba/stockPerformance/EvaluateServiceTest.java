@@ -1,10 +1,15 @@
 package cooba.stockPerformance;
 
+import cooba.stockPerformance.Database.Entity.StockStatisticsInfo;
+import cooba.stockPerformance.Database.repository.StockStatisticsInfoRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,4 +60,18 @@ public class EvaluateServiceTest {
         Assertions.assertArrayEquals(result.toArray(), Stream.of(1, 6, 2, 9, 5, 6, 1, 3).toArray());
     }
 
+    @Autowired
+    StockStatisticsInfoRepository stockStatisticsInfoRepository;
+
+    @Test
+    public void mongoTest() {
+        LocalDateTime startTime = LocalDate.of(2022, 9, 1).atStartOfDay();
+        LocalDateTime endTime = LocalDate.of(2022, 10, 1).atStartOfDay();
+        List<StockStatisticsInfo> statisticsInfoList = stockStatisticsInfoRepository.findByStockcodeAndDateBetween(2330, startTime, endTime);
+        boolean containStart=statisticsInfoList.stream().anyMatch(stockStatisticsInfo -> LocalDate.of(2022, 9, 1).equals(stockStatisticsInfo.getDate()));
+        boolean containEnd=statisticsInfoList.stream().anyMatch(stockStatisticsInfo -> LocalDate.of(2022, 10, 1).equals(stockStatisticsInfo.getDate()));
+
+        Assertions.assertTrue(containStart);
+        Assertions.assertFalse(containEnd);
+    }
 }

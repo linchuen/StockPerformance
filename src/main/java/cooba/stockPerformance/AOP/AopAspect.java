@@ -1,6 +1,6 @@
 package cooba.stockPerformance.AOP;
 
-import cooba.stockPerformance.Service.StatisticsService;
+import cooba.stockPerformance.DBService.StatisticsService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,7 +13,7 @@ public class AopAspect {
     @Autowired
     private StatisticsService statisticsService;
 
-    @After("execution(public void cooba.stockPerformance.Service.StockMonthDataService.downloadData(int,int,int))")
+    @After("execution(public void cooba.stockPerformance.DBService.StockMonthDataService.downloadData(int,int,int))")
     public void addStatistics(JoinPoint joinPoint) {
         Object[] args = joinPoint.getArgs();
         int stockcode = (int) args[0];
