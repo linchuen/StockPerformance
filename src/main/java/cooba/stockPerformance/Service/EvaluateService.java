@@ -33,7 +33,6 @@ public class EvaluateService {
             statisticsInfoList = stockStatisticsInfoRepository.findByStockcodeAndDateBetween(stockcode, startTime, endTime);
         }
 
-
         RateEntity avgCostRate = setGrowthRateList(statisticsInfoList.stream().map(StockStatisticsInfo::getAvgCost).collect(Collectors.toList()));
         fillUpPropertyAndSaveRateEntity(stockcode, year, month, duration,"avg_cost", avgCostRate);
     }

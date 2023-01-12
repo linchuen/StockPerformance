@@ -39,11 +39,11 @@ public class StockMonthDataService {
     private StockTradeInfoRepository stockTradeInfoRepository;
 
     private static final String url = "https://www.twse.com.tw/exchangeReport/STOCK_DAY";
-    private static LinkedBlockingQueue<DownloadDataRequest> blockingQueue = new LinkedBlockingQueue<>();
+    private static final LinkedBlockingQueue<DownloadDataRequest> blockingQueue = new LinkedBlockingQueue<>();
 
     public void addRequestToDownloadQuene(DownloadDataRequest request) {
         String redisKey = RedisKey.DOWNLOAD_REQUEST(request.getStockInfo().getStockcode(), request.getYear(), request.getMonth());
-        if (!redisTemplate.hasKey(redisKey)) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
             blockingQueue.offer(request);
         }
     }
