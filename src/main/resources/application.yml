@@ -19,3 +19,7 @@ line:
 telegram:
   name: "cooba"
   token: "5844208085:AAEOipU6ZzAt4WY9SpsJV6tKHva4pxZyJDc"
+  chatID: "-662128815"
+
+openai:
+  token: "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"

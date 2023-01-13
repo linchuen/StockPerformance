@@ -48,4 +48,20 @@ public class MongoUtil {
 
         mongoTemplate.insert(logObject, MongoCollectionNameEnum.LOG.getName());
     }
+
+    public void insertException(String className, String msg, Exception e) {
+        String now = DATETIME_FORMAT.format(new Date());
+
+        BaseLogObject logObject = ExceptionLogObject
+                .builder()
+                .className(className)
+                .message(msg)
+                .exceptionMsg(e.getMessage())
+                .stackTrace(ExceptionUtils.getStackTrace(e))
+                .localDateTime(LocalDateTime.now())
+                .dateStr(now)
+                .build();
+
+        mongoTemplate.insert(logObject, MongoCollectionNameEnum.EXCEPTION.getName());
+    }
 }
