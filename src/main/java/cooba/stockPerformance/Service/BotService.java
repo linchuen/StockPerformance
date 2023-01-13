@@ -10,6 +10,8 @@ import cooba.stockPerformance.Enums.CommandEnum;
 import cooba.stockPerformance.EventHandler.EventPublisher;
 import cooba.stockPerformance.Object.DownloadDataRequest;
 import cooba.stockPerformance.Utility.DateUtil;
+import cooba.stockPerformance.Utility.MongoUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +20,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.List;
-
+@Slf4j
 @Service
 public class BotService {
+    @Autowired
+    MongoUtil mongoUtil;
     @Autowired
     OpenAiService openAiService;
     @Autowired
@@ -53,14 +57,21 @@ public class BotService {
                 .model("text-davinci-003")
                 .maxTokens(100)
                 .build();
-        List<CompletionChoice> choices = openAiService.createCompletion(completionRequest).getChoices();
-        CompletionChoice result = new CompletionChoice();
-        result.setText("not find result");
-        return choices.stream()
-                .filter(completionChoice -> completionChoice.getFinish_reason().equals("stop"))
-                .findFirst()
-                .orElse(result)
-                .getText();
+        try{
+            List<CompletionChoice> choices = openAiService.createCompletion(completionRequest).getChoices();
+            CompletionChoice result = new CompletionChoice();
+            result.setText("not find result");
+            return choices.stream()
+                    .filter(completionChoice -> completionChoice.getFinish_reason().equals("stop"))
+                    .findFirst()
+                    .orElse(result)
+                    .getText();
+        }catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            mongoUtil.insertException(getClass().getSimpleName(),e.getMessage(),e);
+            return "AI encounter error";
+        }
     }
 
     public String build(String empty) {
