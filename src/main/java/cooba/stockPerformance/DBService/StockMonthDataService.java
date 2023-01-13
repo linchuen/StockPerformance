@@ -44,7 +44,7 @@ public class StockMonthDataService {
     private static final String url = "https://www.twse.com.tw/exchangeReport/STOCK_DAY";
     private static final LinkedBlockingQueue<DownloadDataRequest> blockingQueue = new LinkedBlockingQueue<>();
 
-    private boolean isDone;
+    private boolean isDone = true;
 
     public void addRequestToDownloadQuene(DownloadDataRequest request) {
         String redisKey = RedisKey.DOWNLOAD_REQUEST(request.getStockInfo().getStockcode(), request.getYear(), request.getMonth());
