@@ -10,17 +10,13 @@ import cooba.stockPerformance.Enums.CommandEnum;
 import cooba.stockPerformance.EventHandler.EventPublisher;
 import cooba.stockPerformance.Object.DownloadDataRequest;
 import cooba.stockPerformance.Utility.DateUtil;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -90,24 +86,19 @@ public class BotService {
                 stringBuilder.append("下載月份不應超過當月");
                 return stringBuilder.toString();
             }
-            stringBuilder.append("準備請求");
+            eventPublisher.sendTelegramMsg("準備請求");
+            stringBuilder.append("開始下載股票月份資料");
             List<StockInfo> stockInfoList = crawlStockcodeService.findAllStockInfo();
-            downloadAsync(localDate, stockInfoList);
+            stockInfoList.forEach(stockInfo ->
+                    stockMonthDataService.addRequestToDownloadQuene(DownloadDataRequest.builder()
+                            .stockInfo(stockInfo)
+                            .year(localDate.getYear())
+                            .month(localDate.getMonthValue())
+                            .build())
+            );
         } catch (Exception e) {
             stringBuilder.append("下載股票月份資料失敗");
         }
         return stringBuilder.toString();
-    }
-
-    @Async
-    private void downloadAsync(LocalDate localDate, List<StockInfo> stockInfoList) {
-        stockInfoList.forEach(stockInfo ->
-                stockMonthDataService.addRequestToDownloadQuene(DownloadDataRequest.builder()
-                        .stockInfo(stockInfo)
-                        .year(localDate.getYear())
-                        .month(localDate.getMonthValue())
-                        .build())
-        );
-        eventPublisher.sendTelegramMsg("開始下載股票月份資料");
     }
 }

@@ -24,11 +24,11 @@ import static cooba.stockPerformance.Constant.Constant.*;
 @Service
 public class StatisticsService {
     @Autowired
-    private MongoUtil mongoUtil;
+    MongoUtil mongoUtil;
     @Autowired
-    private StockTradeInfoRepository stockTradeInfoRepository;
+    StockTradeInfoRepository stockTradeInfoRepository;
     @Autowired
-    private StockStatisticsInfoRepository stockStatisticsInfoRepository;
+    StockStatisticsInfoRepository stockStatisticsInfoRepository;
 
     public void calculateStatisticsData(int stockcode, int year, int month) {
         LocalDate last2month = countLast2Month(year, month);
@@ -99,6 +99,7 @@ public class StatisticsService {
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
             BigDecimal first5AVG = first5Sum.divide(BigDecimal.valueOf(days), 2, RoundingMode.HALF_UP);
+            assert method != null;
             method.invoke(resultList.get(days - 1), first5AVG);
 
             for (int i = days; i < stockList.size(); i++) {
