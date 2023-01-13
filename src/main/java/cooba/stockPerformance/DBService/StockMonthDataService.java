@@ -1,4 +1,4 @@
-package cooba.stockPerformance.Service;
+package cooba.stockPerformance.DBService;
 
 import com.opencsv.CSVReader;
 import cooba.stockPerformance.Annotation.Statistics;
@@ -12,7 +12,6 @@ import cooba.stockPerformance.Utility.MongoUtil;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cooba.stockPerformance.Config.CommonConfig.sdFormat;
+import static cooba.stockPerformance.Utility.DateUtil.DATETIME_FORMAT;
 
 @Slf4j
 @Service
@@ -57,7 +56,7 @@ public class StockMonthDataService {
 
     @Statistics
     public void downloadData(int stockcode, int year, int month) {
-        String date = DateUtil.getDateString(year, month, 1, DateUtil.NORMAL_FORMAT);
+        String date = DateUtil.getDateString(year, month, 1);
         mongoUtil.insertLog(getClass().getSimpleName(), "Start download stockcode " + stockcode + " data , date: " + year + month);
         try {
             Map<String, String> map = new HashMap<>(Map.of("response", "csv", "date", date, "stockNo", String.valueOf(stockcode)));
@@ -128,7 +127,7 @@ public class StockMonthDataService {
             mongoUtil.insertLog(getClass().getSimpleName(), "End download stockcode " + stockcode + " data , date: " + year + month);
 
             String redisKey = RedisKey.DOWNLOAD_REQUEST(stockcode, year, month);
-            String now = sdFormat.format(new Date());
+            String now = DATETIME_FORMAT.format(new Date());
             redisTemplate.boundValueOps(redisKey).setIfAbsent(now, 3, TimeUnit.DAYS);
         } catch (Exception e) {
             String msg = String.format("error stockcode: %s , date: %d%d", stockcode, year, month);

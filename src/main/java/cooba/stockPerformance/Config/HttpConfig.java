@@ -13,7 +13,7 @@ public class HttpConfig {
     public OkHttpClient httpClient(){
         OkHttpClient client = new OkHttpClient.Builder()
                 .readTimeout(3, TimeUnit.SECONDS)
-                .connectTimeout(10, TimeUnit.MILLISECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
                 .build();
         return client;
     }

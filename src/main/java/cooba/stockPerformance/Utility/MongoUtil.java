@@ -6,14 +6,13 @@ import cooba.stockPerformance.Object.ExceptionLogObject;
 import cooba.stockPerformance.Object.LogObject;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import static cooba.stockPerformance.Config.CommonConfig.sdFormat;
+import static cooba.stockPerformance.Utility.DateUtil.DATETIME_FORMAT;
 
 @Component
 public class MongoUtil {
@@ -21,7 +20,7 @@ public class MongoUtil {
     MongoTemplate mongoTemplate;
 
     public void insertDataExceptionLog(String className, String msg, Exception e) {
-        String now = sdFormat.format(new Date());
+        String now = DATETIME_FORMAT.format(new Date());
 
         BaseLogObject logObject = ExceptionLogObject
                 .builder()
@@ -37,7 +36,7 @@ public class MongoUtil {
     }
 
     public void insertLog(String className, String msg) {
-        String now = sdFormat.format(new Date());
+        String now = DATETIME_FORMAT.format(new Date());
 
         BaseLogObject logObject = LogObject
                 .builder()

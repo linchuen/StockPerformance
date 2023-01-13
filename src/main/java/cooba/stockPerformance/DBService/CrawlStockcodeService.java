@@ -1,4 +1,4 @@
-package cooba.stockPerformance.Service;
+package cooba.stockPerformance.DBService;
 
 import cooba.stockPerformance.Database.Entity.StockInfo;
 import cooba.stockPerformance.Database.repository.StockInfoRepository;
@@ -8,7 +8,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;

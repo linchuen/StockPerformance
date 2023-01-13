@@ -2,9 +2,9 @@ package cooba.stockPerformance.Controller;
 
 import cooba.stockPerformance.Database.Entity.StockInfo;
 import cooba.stockPerformance.Object.DownloadDataRequest;
-import cooba.stockPerformance.Service.CrawlStockcodeService;
-import cooba.stockPerformance.Service.StatisticsService;
-import cooba.stockPerformance.Service.StockMonthDataService;
+import cooba.stockPerformance.DBService.CrawlStockcodeService;
+import cooba.stockPerformance.DBService.StatisticsService;
+import cooba.stockPerformance.DBService.StockMonthDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
