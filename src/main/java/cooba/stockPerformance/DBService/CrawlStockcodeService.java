@@ -22,7 +22,8 @@ public class CrawlStockcodeService {
     @Autowired
     StockInfoRepository stockInfoRepository;
 
-    public void crawlIndustry(String siteurl) throws IOException {
+    public void crawlIndustry() throws IOException {
+        String siteurl = "https://isin.twse.com.tw/isin/C_public.jsp?strMode=2";
         List<StockInfo> stockInfoList = new ArrayList<>();
 
         Document doc = Jsoup.connect(siteurl).get();
@@ -50,15 +51,19 @@ public class CrawlStockcodeService {
             stockInfoList.add(stockInfo);
         }
 
-        try{
-            stockInfoRepository.insert(stockInfoList);
-        }catch (Exception e){
+        try {
+            stockInfoRepository.saveAll(stockInfoList);
+        } catch (Exception e) {
             e.printStackTrace();
             log.error("股票基本資料建立錯誤");
         }
     }
 
-    public List<StockInfo> findAllStockInfo(){
+    public List<StockInfo> findAllStockInfo() {
         return stockInfoRepository.findAll();
+    }
+
+    public Long getAllStockInfoCount() {
+        return stockInfoRepository.count();
     }
 }

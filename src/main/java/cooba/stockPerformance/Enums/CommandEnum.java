@@ -9,7 +9,9 @@ import java.util.*;
 @Getter
 public enum CommandEnum {
     CMD("cmd", "顯示所有可執行指令"),
-    ASK("ask", "向機器人提出問題");
+    ASK("ask", "向機器人提出問題"),
+    BUILD("build","建立股票基本資訊及分類"),
+    DOWNLOAD("download","下載股票月份資料 輸入格式: 202301");
 
     private final String name;
     private final String description;

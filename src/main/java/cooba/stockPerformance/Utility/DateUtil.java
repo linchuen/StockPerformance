@@ -18,4 +18,10 @@ public class DateUtil {
     public static String getDateString(int year, int month, int day, String type) {
         return LocalDate.of(year, month, day).format(DateTimeFormatter.ofPattern(type));
     }
+
+    public static LocalDate getDateByString(String str) {
+        DateTimeFormatter format = DateTimeFormatter.ofPattern(NORMAL_FORMAT);
+        if (str.length() == 6) return LocalDate.parse(str + "01", format);
+        return LocalDate.parse(str, format);
+    }
 }

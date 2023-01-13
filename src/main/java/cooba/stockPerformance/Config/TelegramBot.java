@@ -37,6 +37,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         return this.token;
     }
 
+    public String getChatID() {
+        return this.chatID;
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
         try {

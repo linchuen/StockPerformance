@@ -25,7 +25,7 @@ class StockPerformanceApplicationTests {
     @Test
     void contextLoads() {
         try {
-            crawlStockcodeService.crawlIndustry("https://isin.twse.com.tw/isin/C_public.jsp?strMode=2");
+            crawlStockcodeService.crawlIndustry();
         } catch (IOException e) {
             e.printStackTrace();
         }

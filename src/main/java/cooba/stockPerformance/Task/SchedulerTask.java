@@ -22,7 +22,7 @@ public class SchedulerTask {
 
     @Scheduled(cron = "0 0 0 1 1,4,7,10 *")
     public void crawlStockBaseInfo() throws IOException {
-        crawlStockcodeService.crawlIndustry("https://isin.twse.com.tw/isin/C_public.jsp?strMode=2");
+        crawlStockcodeService.crawlIndustry();
     }
 
 }

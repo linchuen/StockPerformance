@@ -18,9 +18,7 @@ public class OpenAIConfig {
         return new OpenAiService(token);
     }
 
-    @Bean
-    @Qualifier("AIModel")
-    public Map<String, Model> getAIModel(OpenAiService openAiService) {
+    public static Map<String, Model> getAIModel(OpenAiService openAiService) {
         return openAiService.listModels().stream().collect(Collectors.toMap(Model::getId, Function.identity()));
     }
 

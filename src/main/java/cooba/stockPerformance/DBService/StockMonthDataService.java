@@ -2,9 +2,11 @@ package cooba.stockPerformance.DBService;
 
 import com.opencsv.CSVReader;
 import cooba.stockPerformance.Annotation.Statistics;
+import cooba.stockPerformance.Config.TelegramBot;
 import cooba.stockPerformance.Constant.RedisKey;
 import cooba.stockPerformance.Database.Entity.StockTradeInfo;
 import cooba.stockPerformance.Database.repository.StockTradeInfoRepository;
+import cooba.stockPerformance.EventHandler.EventPublisher;
 import cooba.stockPerformance.Object.DownloadDataRequest;
 import cooba.stockPerformance.Utility.DateUtil;
 import cooba.stockPerformance.Utility.HttpUtil;
@@ -29,32 +31,46 @@ import static cooba.stockPerformance.Utility.DateUtil.DATETIME_FORMAT;
 @Service
 public class StockMonthDataService {
     @Autowired
-    private MongoUtil mongoUtil;
+    MongoUtil mongoUtil;
     @Autowired
-    private HttpUtil httpUtil;
+    HttpUtil httpUtil;
     @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+    RedisTemplate<String, String> redisTemplate;
     @Autowired
-    private StockTradeInfoRepository stockTradeInfoRepository;
+    StockTradeInfoRepository stockTradeInfoRepository;
+    @Autowired
+    EventPublisher eventPublisher;
 
     private static final String url = "https://www.twse.com.tw/exchangeReport/STOCK_DAY";
     private static final LinkedBlockingQueue<DownloadDataRequest> blockingQueue = new LinkedBlockingQueue<>();
+
+    private boolean isDone;
 
     public void addRequestToDownloadQuene(DownloadDataRequest request) {
         String redisKey = RedisKey.DOWNLOAD_REQUEST(request.getStockInfo().getStockcode(), request.getYear(), request.getMonth());
         if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
             blockingQueue.offer(request);
-        }
-    }
-
-    public void pollRequestDownloadData() {
-        DownloadDataRequest request = blockingQueue.poll();
-        if (request != null) {
-            downloadData(request.getStockInfo().getStockcode(), request.getYear(), request.getMonth());
+            isDone = false;
         }
     }
 
     @Statistics
+    public DownloadDataRequest pollRequestDownloadData() {
+        DownloadDataRequest request = blockingQueue.poll();
+        if (request != null) {
+            downloadData(request.getStockInfo().getStockcode(), request.getYear(), request.getMonth());
+            return request;
+        }
+        return null;
+    }
+
+    public void sendFinishMsgToTelegram() {
+        if (!isDone && blockingQueue.size() == 0) {
+            isDone = true;
+            eventPublisher.sendTelegramMsg("結束下載股票月份資料");
+        }
+    }
+
     public void downloadData(int stockcode, int year, int month) {
         String date = DateUtil.getDateString(year, month, 1);
         mongoUtil.insertLog(getClass().getSimpleName(), "Start download stockcode " + stockcode + " data , date: " + year + month);

@@ -1,8 +1,11 @@
 package cooba.stockPerformance.AOP;
 
 import cooba.stockPerformance.DBService.StatisticsService;
+import cooba.stockPerformance.DBService.StockMonthDataService;
+import cooba.stockPerformance.Object.DownloadDataRequest;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,14 +14,15 @@ import org.springframework.stereotype.Component;
 @Aspect
 public class AopAspect {
     @Autowired
-    private StatisticsService statisticsService;
+    StatisticsService statisticsService;
+    @Autowired
+    StockMonthDataService stockMonthDataService;
 
-    @After("execution(public void cooba.stockPerformance.DBService.StockMonthDataService.downloadData(int,int,int))")
-    public void addStatistics(JoinPoint joinPoint) {
-        Object[] args = joinPoint.getArgs();
-        int stockcode = (int) args[0];
-        int year = (int) args[1];
-        int month = (int) args[2];
-        statisticsService.calculateStatisticsData(stockcode, year, month);
+    @AfterReturning(pointcut = "@annotation(cooba.stockPerformance.Annotation.Statistics)", returning = "request")
+    public void addStatistics(JoinPoint joinPoint, Object request) {
+        if (request instanceof DownloadDataRequest dataRequest) {
+            statisticsService.calculateStatisticsData(dataRequest.getStockInfo().getStockcode(), dataRequest.getYear(), dataRequest.getMonth());
+        }
+        stockMonthDataService.sendFinishMsgToTelegram();
     }
 }
